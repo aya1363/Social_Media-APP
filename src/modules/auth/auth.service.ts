@@ -119,10 +119,7 @@ confirmEmail = async (req: Request, res: Response): Promise<Response> => {
 
     return res.status(200).json({ message: "Email confirmed successfully 🎉" }); 
     };
-    resendOtp = async(req:Request, res:Response):Promise<Response> => {
-        
-        return res.status(200).json({message:'resend otp successfully' , data:req.body})
-    }
+  
 
 
 
