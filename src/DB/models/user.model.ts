@@ -79,7 +79,7 @@ userSchema.virtual('userName')
     this.set({firstName , lastName})   
     })
     .get(function () {
-    return `${this.firstName }  ${this.lastName}`
+    return `${this.firstName } ${this.lastName}`
     })
 
 

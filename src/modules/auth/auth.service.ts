@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import { ApplicationException, BadRequestException, conflictRequestException } from '../../utils/response/error.response';
 import userModel from '../../DB/models/user.model';
-import { IConfirmEmailBodyInputs, ILoginBodyInputs, ISignupBodyInputs } from './auth.dto'
+import {  IConfirmEmailBodyInputsDto,  ILoginBodyInputsDto, ISignupBodyInputsDto } from './auth.dto'
 import * as validators from './auth.validation'
 import { compareHash, generateHash } from '../../utils/security/hash.security';
 import { emailEvent } from '../../utils/events/email.event';
@@ -13,13 +13,21 @@ import { generateToken } from '../../utils/security/token.security';
 class AuthenticationService{
 
     constructor() { }
+    /**
+     * 
+     * @param req Express.Request
+     * @param res Express.Response
+     * @returns Promise<Response>
+     * @example({ userName, password, email }:ISignupBodyInputs)
+     * return {message'done',statusCode:201}
+     */
 
 signup = async (req: Request, res: Response): Promise<Response> => {
 
     await validators.signup.body.parseAsync(req.body).catch ((error)=> {
             throw new BadRequestException('validation Error',{issue:JSON.parse(error as string)})})
 
-    const { userName, password, email }: ISignupBodyInputs = req.body;
+    const { userName, password, email }: ISignupBodyInputsDto = req.body;
 
     const existUser = await userModel.findOne({ email });
     if (existUser) {
@@ -53,11 +61,11 @@ signup = async (req: Request, res: Response): Promise<Response> => {
 
 
 confirmEmail = async (req: Request, res: Response): Promise<Response> => {
- 
+
         await validators.confirmEmail.body.parseAsync(req.body).catch ((error)=> {
             throw new BadRequestException('validation Error',{issue:JSON.parse(error as string)})})
 
-        const { email, otp }: IConfirmEmailBodyInputs = req.body;
+        const { email, otp }: IConfirmEmailBodyInputsDto = req.body;
 
     const user = await userModel.findOne({
         email,
@@ -127,7 +135,7 @@ confirmEmail = async (req: Request, res: Response): Promise<Response> => {
         await validators.login.body.parseAsync(req.body).catch((error) => {
             throw new BadRequestException('validation error',{issue:JSON.parse(error as string)})
         })
-        const { email, password }: ILoginBodyInputs = req.body
+        const { email, password }: ILoginBodyInputsDto = req.body
         const user = await userModel.findOne({
             email, confirmEmail: { $exists: true },
             confirmEmailOtp: { $exists: true }

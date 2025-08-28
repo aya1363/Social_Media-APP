@@ -9,7 +9,7 @@ export const emailVerification = async ({ otp, title = `Confirm Your Email` }: {
     body {
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #0d47a1, #1976d2);
+      background: linear-gradient(135deg, #a10d95ff, #1976d2);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #fff;
     }
@@ -39,7 +39,7 @@ export const emailVerification = async ({ otp, title = `Confirm Your Email` }: {
 
     .otp-box {
       display: inline-block;
-      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      background: linear-gradient(135deg, #d219b0ff, #427ef5ff);
       color: #fff;
       font-size: 30px;
       font-weight: bold;
