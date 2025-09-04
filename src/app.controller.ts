@@ -6,9 +6,12 @@ import type { Request, Response, Express } from 'express'
 import cors from 'cors'
 import helmet from "helmet";
 import { rateLimit } from 'express-rate-limit'
+import userController from './modules/user/user.controller'
 import authController from './modules/auth/auth.controller'
 import { connectDB } from "./DB/connection.db";
 import { globalErrorHandling } from "./utils/response/error.response";
+
+
 
    const limiter = rateLimit({
         windowMs: 60 * 60000,
@@ -18,15 +21,17 @@ import { globalErrorHandling } from "./utils/response/error.response";
    })
  
 
-const bootstrap = ():void => {
+const bootstrap = async (): Promise<void> => {
     const app: Express = express()
     const port: number | string = process.env.PORT || 3000
-    connectDB();
+    await connectDB();
     app.use(cors(), express.json(), helmet(),limiter)
     
     app.use('/auth', authController)
+    app.use('/user',userController)
 
-    
+
+
     app.get('/', (req:Request ,res:Response) => {
         res.json({message:`Welcome to ${process.env.APPLICATION_NAME} home page 📱🌼`})
     })

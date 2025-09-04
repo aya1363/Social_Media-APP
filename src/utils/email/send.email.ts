@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 
 export async function sendEmail({
     from = process.env.APP_EMAIL,
+   
     to = '',
     cc = '',
     bcc = '',
@@ -27,6 +28,8 @@ export async function sendEmail({
             pass: process.env.APP_PASSWORD,
         }
         })
+    
+    
 
         const info = await transporter.sendMail({
             from: `"social Media App" <${from}>`,

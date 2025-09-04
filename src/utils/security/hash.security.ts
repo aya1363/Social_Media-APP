@@ -12,7 +12,7 @@ interface CompareHashParams {
 
 export const generateHash = async ({
     plaintext,
-    saltRound = 12,
+    saltRound = Number(process.env.SALT_ROUND),
 }: GenerateHashParams): Promise<string> => {
     return hash(plaintext, saltRound)
 }
@@ -23,3 +23,4 @@ export const compareHash = async ({
 }: CompareHashParams): Promise<boolean> => {
     return compare(plaintext, hashValue)
 }
+

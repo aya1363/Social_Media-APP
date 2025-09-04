@@ -35,3 +35,31 @@ export const confirmEmail = {
     })
 }
 
+export const signupWithGmail = {
+    body: z.strictObject({
+        idToken:z.string()
+    })
+}
+export const loginWithGmail = {
+    body: z.strictObject({
+        idToken:z.string()
+    })
+}
+export const sendForgotPassword = {
+    body: z.strictObject({
+          email:generalFields.email
+    })
+}
+export const resetPassword = {
+    body: z.strictObject({
+         email: generalFields.email,
+  password: generalFields.password,
+  otp: generalFields.otp
+    })
+}
+export const verifyForgotPasswordOtp = {
+    body: z.strictObject({
+        email: generalFields.email,
+        otp:generalFields.otp
+    })
+}
