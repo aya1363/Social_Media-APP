@@ -25,6 +25,7 @@
    // "declarationMap": true,
 
     // Stricter Typechecking Options
+    "moduleResolution": "node" ,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "removeComments": true,
@@ -42,7 +43,7 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-    "verbatimModuleSyntax": false,
+   // "verbatimModuleSyntax": false,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",

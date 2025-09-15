@@ -20,10 +20,10 @@ export const authentication = (tokenType:tokenEnum = tokenEnum.access) => {
        
         
         req.user = user;
-        console.log(typeof req.user._id);
+      //  console.log(typeof req.user._id);
         
         req.decoded = decoded as DecodedToken
-         console.log({typeDecoded:typeof req.decoded?._id});
+        // console.log({typeDecoded:typeof req.decoded?._id});
         next()
     }
     
