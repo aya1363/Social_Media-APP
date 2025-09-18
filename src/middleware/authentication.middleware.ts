@@ -24,7 +24,7 @@ export const authentication = (tokenType:tokenEnum = tokenEnum.access) => {
         
         req.decoded = decoded as DecodedToken
         // console.log({typeDecoded:typeof req.decoded?._id});
-        next()
+         next()
     }
     
 }

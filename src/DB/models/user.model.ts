@@ -1,4 +1,4 @@
-import mongoose, { HydratedDocument, models, Schema } from "mongoose";
+import mongoose, { HydratedDocument, models, Schema, Types } from "mongoose";
 
 export enum Gender {
     Male = "male",
@@ -22,8 +22,10 @@ export interface IUser {
   phone?: string;
   gender: Gender;
   role: Role;
-  picture?: string;
-  coverPicture?: string[];
+  profilePicture?: string;
+  temporaryProfilePicture?: string;
+
+  coverPictures?: string[];
   createdAt: Date;
   updatedAt?: Date;
   confirmEmail?: Date | null;
@@ -38,7 +40,12 @@ resetPasswordOtp?: string | null | undefined;
   changeCredentialTime?: Date;
   provider: Provider;
   otpBanned?: Date | null;
+  freezedAt?: Date, 
+  freezedBy?: Types.ObjectId
+  restoredAt?: Date, 
+  restoredBy?:Types.ObjectId
 }
+export type HdUserDocument = HydratedDocument<IUser>
 
 const userSchema: Schema<IUser> = new mongoose.Schema(
   {
@@ -58,8 +65,9 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
 
     changeCredentialTime: Date,
     provider: { type: String, enum: Object.values(Provider), default: Provider.SYSTEM },
-    picture: { type: String },
-    coverPicture: [String],
+    profilePicture: { type: String },
+    temporaryProfilePicture:{type: String},
+    coverPictures: [String],
     role: { type: String, enum: Object.values(Role), default: Role.user },
 
     // Email confirmation
@@ -68,6 +76,16 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     confirmEmailOtpCreatedAt: { type: Date, default: null },
     confirmEmailOtpTries: { type: Number, default: 0 },
     otpBanned: { type: Date, default: null },
+    freezedAt: {type:Date}, 
+    freezedBy: {
+      type: Schema.Types.ObjectId, 
+    ref:'User'
+  },
+    restoredAt: {type:Date}, 
+    restoredBy: {
+      type: Schema.Types.ObjectId,
+    ref:'User'
+  }
   },
   {
     timestamps: true,
@@ -87,5 +105,6 @@ userSchema.virtual('userName')
     })
 
 
+
+
 export const userModel = models.User||mongoose.model<IUser>('User', userSchema)
-export type HdUserDocument = HydratedDocument<IUser>

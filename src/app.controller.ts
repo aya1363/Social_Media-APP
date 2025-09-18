@@ -13,7 +13,7 @@ import { globalErrorHandling } from "./utils/response/error.response";
 
 
 
-   const limiter = rateLimit({
+    const limiter = rateLimit({
         windowMs: 60 * 60000,
         limit: 2000, 
         message: 'error to many request ,please try again later  ',

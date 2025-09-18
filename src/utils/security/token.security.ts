@@ -130,7 +130,7 @@ export const decodeToken = async (
     throw new unAuthorizedRequestException('invalid or old login credential ')
    
   }
-   console.log("Decoded token:", decoded);
+  //  console.log("Decoded token:", decoded);
   return { user, decoded }
  
 }

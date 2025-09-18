@@ -3,6 +3,7 @@ import { ZodError, ZodType } from "zod";
 import { BadRequestException } from "../utils/response/error.response";
 import { z } from 'zod'
 import { Gender } from '../DB/models/user.model';
+import { Types } from "mongoose";
 type KeyReqType = keyof Request;
 type SchemaType = Partial<Record<KeyReqType, ZodType>>;
 
@@ -44,10 +45,18 @@ export const generalFields =  {
             password: z.string().
                 regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
     ),
-            confirmPassword: z.string(),
-            otp:z.string()
+              confirmPassword: z.string(),
+                otp: z.string(),
+                id: z
+                  .string()
+                  .refine((val) => Types.ObjectId.isValid(val), {
+                    message: "invalid objectId format",
+                    path: ["userId"],
+                  }),
+              
         
-            }
+}
+            
             
         
     

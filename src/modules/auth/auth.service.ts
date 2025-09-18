@@ -5,12 +5,13 @@ import {Provider, userModel} from '../../DB/models/user.model';
 import {  IConfirmEmailBodyInputsDto,  IGmail,  ILoginBodyInputsDto, ISignupBodyInputsDto } from './auth.dto'
 import * as validators from './auth.validation'
 import { compareHash, generateHash } from '../../utils/security/hash.security';
-import { emailEvent } from '../../utils/events/email.event';
+import { emailEvent } from '../../utils/email/email.event';
 import { generateOtp } from '../../utils/otp';
 import { getLoginCredentials } from '../../utils/security/token.security';
 import {OAuth2Client, type TokenPayload} from 'google-auth-library';
 
 import { UserRepository } from '../../DB/DBRepository/user.repository';
+import { successResponse } from '../../utils/response/success.response';
 
 
 class AuthenticationService{
@@ -80,8 +81,9 @@ const user = await this.userModel.createUser({
 
     emailEvent.emit("confirmEmail", { to: email, otp });
 
-    return res.status(201).json({ message: "Signup successfully 🎉", data: user });
- 
+    return successResponse({ res, statusCode: 201, data: { user } })
+    
+
 };
 
 
@@ -149,15 +151,14 @@ confirmEmail = async (req: Request, res: Response): Promise<Response> => {
         otpBanned: null,
     },
   },
-  options: { runValidators: true , new:true }, 
+  options: { runValidators: true }, 
 });
-
-
-    return res.status(200).json({ message: "Email confirmed successfully 🎉" }); 
+        return successResponse({ res })
+    
     };
     resendOtp = async(req:Request, res:Response):Promise<Response> => {
         
-        return res.status(200).json({message:'resend otp successfully' , data:req.body})
+        return successResponse({res })
     }
 
 
@@ -189,7 +190,8 @@ confirmEmail = async (req: Request, res: Response): Promise<Response> => {
 
 
     
-        return res.status(200).json({message:'login successfully 🎉' , data:{credentials}})
+        return successResponse({ res, data: { credentials } })
+        
     }
 
     signupWithGmail = async (req: Request, res: Response): Promise<Response> => {
@@ -213,7 +215,7 @@ confirmEmail = async (req: Request, res: Response): Promise<Response> => {
             data: [{
                 firstName: given_name as string
                 , lastName: family_name as string ,
-                picture:picture  as string ,
+                profilePicture:picture  as string ,
                 confirmEmail:new Date()
             }]
         }) || []
@@ -222,7 +224,7 @@ confirmEmail = async (req: Request, res: Response): Promise<Response> => {
             
         }
         const credentials = await getLoginCredentials(newUser)
-                return res.status(200).json({message:'signup successfully 🎉' , data:{credentials}})
+                return successResponse({res , data:{credentials}})
 
     }
 
@@ -240,7 +242,7 @@ confirmEmail = async (req: Request, res: Response): Promise<Response> => {
         }
     
         const credentials = await getLoginCredentials(user)
-                return res.status(200).json({message:'login with gmail successfully 🎉' , data:{credentials}})
+                return successResponse({res , data:{credentials}})
 
     }
     sendForgotPassword = async (req: Request, res: Response): Promise<Response> => {
@@ -273,7 +275,7 @@ confirmEmail = async (req: Request, res: Response): Promise<Response> => {
     otp, // send plain OTP in email
   });
 
-  return res.json({ message: "OTP sent successfully" });
+                return successResponse({res })
 };
 
 
@@ -302,7 +304,7 @@ if (!isMatch) {
     throw new Error("Invalid OTP");
   }
 
-return res.json({ message: "OTP verified successfully" });
+                return successResponse({res })
 };
 
 
@@ -327,7 +329,7 @@ return res.json({ message: "OTP verified successfully" });
 
     await user.save();
 
-    return res.json({ message: "Password reset successfully" });
+                return successResponse({res })
 }
 
 }

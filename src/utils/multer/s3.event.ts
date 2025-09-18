@@ -6,28 +6,28 @@ export const s3Event = new EventEmitter()
 
 s3Event.on('trackProfileImageUpload', (data) => {
 
-    console.log({ data });
+    // console.log({ data });
     setTimeout(async () => {
         const UserModel = new UserRepository(userModel)
         try {
             await getFile({ Key: data.Key })
-            console.log({ data });
+            // console.log({ data });
             await UserModel.updateOne({
                 filter: {_id:data.userId},
                 update: {
-                    $unset:{temporaryProfileImage:1}
+                    $unset:{temporaryProfilePicture:1}
                 }
             })
             await deleteFile({ Key:data.oldKey})
             console.log('Done 🎉');   
         } catch (error:any) {
-            console.log({ error });
+           // console.log({ error });
             if (error.code === 'NoSuchKey') {
                 await UserModel.updateOne({
                     filter: {_id:data.userId},
                     update: {
-                        picture:data.oldKey,
-                        $unset:{temporaryProfileImage:1}
+                        profilePicture:data.oldKey,
+                        $unset:{temporaryProfilePicture:1}
                     }
                 })
             }

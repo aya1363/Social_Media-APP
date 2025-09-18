@@ -38,5 +38,5 @@ export async function sendEmail({
             html,
             attachments
 });
-    console.log("Email sent:", info.messageId);
+    console.log(`📧 Email sent to ${to} `, info.messageId);
 }

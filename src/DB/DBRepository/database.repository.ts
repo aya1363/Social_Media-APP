@@ -1,14 +1,15 @@
 import {
     CreateOptions, FlattenMaps, HydratedDocument,
     Model, MongooseUpdateQueryOptions, PopulateOptions, ProjectionType, QueryOptions,
-    RootFilterQuery, UpdateQuery,
-    UpdateWriteOpResult
+    RootFilterQuery, Types, UpdateQuery,
+    UpdateWriteOpResult,DeleteResult 
 } from "mongoose";
 
 export type Lean<T>=HydratedDocument<FlattenMaps<T>>
 export abstract class  DatabaseRepository<TDocument>{
 
-    constructor(protected readonly model: Model<TDocument>) { }
+  constructor(protected readonly model: Model<TDocument>) { }
+  
       async findOneAndUpdate({
   filter,
   update,
@@ -32,18 +33,12 @@ export abstract class  DatabaseRepository<TDocument>{
 }
 
 
-     async updateOne({
-    filter,
-    update,
-    
-  }: {
-    filter: RootFilterQuery<TDocument>;
-    update: UpdateQuery<TDocument>;
-    options?: QueryOptions<TDocument>;
-         }) {
-         
-      return await this.model.updateOne(filter, update );
-  }
+async deleteOne(
+  filter: RootFilterQuery<TDocument>,
+): Promise<DeleteResult> {
+  return this.model.deleteOne(filter);
+}
+
    
     async findOne({ filter, select ,options}: {
         filter?: RootFilterQuery<TDocument> ,
@@ -60,7 +55,9 @@ export abstract class  DatabaseRepository<TDocument>{
         return await doc.exec()
     }
 
-    async UpdateOne({ filter, update, options }: {
+  async updateOne({ filter,
+    update,
+    options }: {
         filter: RootFilterQuery<TDocument>,
         update?: UpdateQuery<TDocument> | null,
         options?: MongooseUpdateQueryOptions<TDocument> | null
@@ -70,6 +67,21 @@ export abstract class  DatabaseRepository<TDocument>{
             {
                 ...update,
                 $inc: { __v: 1 }
+            },
+            options)
+  }
+  
+  async findByIdAndUpdate({ id,
+    update,
+    options={new:true} }: {
+              id: Types.ObjectId | any,
+              update?: UpdateQuery<TDocument>,
+              options?: QueryOptions<TDocument> | null
+    }): Promise<HydratedDocument<TDocument> | Lean<TDocument> | null>{
+          return await this.model.findByIdAndUpdate(
+            id,
+            {
+                ...update,$inc: { __v: 1 }
             },
             options)
     }

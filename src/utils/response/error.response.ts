@@ -57,4 +57,5 @@ export const globalErrorHandling = (error: IError,
             stack: process.env.MOOD === 'development' ? error.stack : undefined,
             cause:error.cause
         });
-    }
+}
+    
