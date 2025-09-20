@@ -17,7 +17,7 @@ export const authentication = (tokenType:tokenEnum = tokenEnum.access) => {
             authorization: req.headers.authorization,
             tokenType 
         })
-       
+
         
         req.user = user;
       //  console.log(typeof req.user._id);

@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { Types, UpdateQuery } from "mongoose";
 import { DecodedToken } from "request.express";
-import { UserRepository } from "../../DB/DBRepository/user.repository";
+import { UserRepository } from "../../DB/DBRepository";
 import {
   HdUserDocument,
   IUser,
   Role,
-  userModel,
-} from "../../DB/models/user.model";
+  UserModel,
+} from "../../DB/models";
 import {
   createPreSignUploadUrl,
   DeleteFiles,
@@ -18,9 +18,10 @@ import { s3Event } from "../../utils/multer/s3.event";
 import {
   BadRequestException,
   forBiddenRequestException,
-  notFoundRequestException,
+    notFoundRequestException,
+  
 } from "../../utils/response/error.response";
-import { successResponse } from "../../utils/response/success.response";
+
 import {
   getLoginCredentials,
   logoutEnum,
@@ -34,9 +35,10 @@ import {
 } from "./user.dto";
 import { storageEnum } from "../../utils/multer/cloud.multer";
 import { IUserResponse } from "./user.entities";
+import { successResponse } from "../../utils/response/success.response";
 
 class UserService {
-  private userModel = new UserRepository(userModel);
+  private userModel = new UserRepository(UserModel);
 
   constructor() {}
 

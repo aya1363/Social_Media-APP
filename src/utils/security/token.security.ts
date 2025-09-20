@@ -1,10 +1,8 @@
 import jwt, { JwtPayload, Secret, SignOptions } from "jsonwebtoken";
 import { v4 as uuid} from 'uuid'
-import { HdUserDocument, Role, userModel } from "../../DB/models/user.model";
+import { HdUserDocument, Role ,HTokenDocument, TokenModel, UserModel} from "../../DB/models";
 import { BadRequestException, unAuthorizedRequestException } from "../response/error.response";
-import { UserRepository } from "../../DB/DBRepository/user.repository";
-import { HTokenDocument, TokenModel } from "../../DB/models/Token.model";
-import { tokenRepository } from "../../DB/DBRepository/token.repository";
+import { UserRepository ,tokenRepository} from "../../DB/DBRepository";
 import mongoose from "mongoose";
 import { DecodedToken } from "request.express";
 
@@ -105,7 +103,7 @@ export const decodeToken = async (
   if (! bearerKey || !token) {
     throw new unAuthorizedRequestException('missing token parts')
   }
-  const UserModel = new UserRepository(userModel)
+  const userModel = new UserRepository(UserModel)
   const tokenModel = new tokenRepository(TokenModel)
 
   const signatures = await getSignature(bearerKey as signatureLevelEnum)
@@ -121,7 +119,7 @@ export const decodeToken = async (
   if (await tokenModel.findOne({filter:{jti:decoded.jti}})) {
       throw new unAuthorizedRequestException('invalid or old login credential ')
   }
-  const user = await UserModel.findOne({ filter: { _id: decoded._id } })
+  const user = await userModel.findOne({ filter: { _id: decoded._id } })
   if (!user) {
     throw new BadRequestException('you are not registered account ')
   }

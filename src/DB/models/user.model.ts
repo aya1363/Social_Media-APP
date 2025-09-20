@@ -1,4 +1,6 @@
 import mongoose, { HydratedDocument, models, Schema, Types } from "mongoose";
+import { generateHash } from "../../utils/security/hash.security";
+import { emailEvent } from "../../utils/email/email.event";
 
 export enum Gender {
     Male = "male",
@@ -43,7 +45,12 @@ resetPasswordOtp?: string | null | undefined;
   freezedAt?: Date, 
   freezedBy?: Types.ObjectId
   restoredAt?: Date, 
-  restoredBy?:Types.ObjectId
+  restoredBy?: Types.ObjectId
+  twoFactorEnabled?: boolean;
+twoFactorOtp?: string | null;
+twoFactorOtpCreatedAt?: Date | null;
+  twoFactorOtpTries?: number;
+  
 }
 export type HdUserDocument = HydratedDocument<IUser>
 
@@ -85,7 +92,25 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     restoredBy: {
       type: Schema.Types.ObjectId,
     ref:'User'
-  }
+    },
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false
+    },
+    twoFactorOtp: {
+      type: String,
+      default: null
+    },
+    twoFactorOtpCreatedAt: {
+      type: Date,
+      default: null
+    },
+    twoFactorOtpTries: {
+      type: Number,
+      default: 0
+    },
+
+    
   },
   {
     timestamps: true,
@@ -103,8 +128,40 @@ userSchema.virtual('userName')
     .get(function () {
     return `${this.firstName } ${this.lastName}`
     })
+userSchema.pre('save', async function (
+  this: HdUserDocument & { wasNew: boolean, confirmEmailPlainOtp?: string }
+  , next) {
+  console.log(this);
+  this.wasNew = this.isNew
+  if (this.isModified('password')) {
+    this.password = await generateHash({plaintext:this.password})
+  }
+  if (this.isModified('confirmEmailOtp')) {
+    this.confirmEmailPlainOtp= this.confirmEmailOtp as string
+    this.confirmEmailOtp = await generateHash({plaintext:this.confirmEmailOtp  as string} )
+  } 
+  next()
+      
+})
+    
+userSchema.post('save',async function(doc, next)  {
+  const that = this as HdUserDocument & {
+    wasNew: boolean,
+    confirmEmailPlainOtp?: string
+  };
+  if (that.wasNew && that.confirmEmailPlainOtp) {
+    emailEvent.emit('confirmEmail', {
+      to: this.email,
+      otp: that.confirmEmailPlainOtp
+    })
+
+  }
+
+
+  next()
+})
 
 
 
 
-export const userModel = models.User||mongoose.model<IUser>('User', userSchema)
+export const UserModel = models.User||mongoose.model<IUser>('User', userSchema)

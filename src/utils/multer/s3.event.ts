@@ -1,18 +1,18 @@
 import EventEmitter from 'node:events';
 import { deleteFile, getFile } from './s3.config';
-import { userModel } from '../../DB/models/user.model';
-import { UserRepository } from '../../DB/DBRepository/user.repository';
+import { UserModel } from '../../DB/models';
+import { UserRepository } from '../../DB/DBRepository';
 export const s3Event = new EventEmitter()
 
 s3Event.on('trackProfileImageUpload', (data) => {
 
     // console.log({ data });
     setTimeout(async () => {
-        const UserModel = new UserRepository(userModel)
+        const userModel = new UserRepository(UserModel)
         try {
             await getFile({ Key: data.Key })
             // console.log({ data });
-            await UserModel.updateOne({
+            await userModel.updateOne({
                 filter: {_id:data.userId},
                 update: {
                     $unset:{temporaryProfilePicture:1}
@@ -23,7 +23,7 @@ s3Event.on('trackProfileImageUpload', (data) => {
         } catch (error:any) {
            // console.log({ error });
             if (error.code === 'NoSuchKey') {
-                await UserModel.updateOne({
+                await userModel.updateOne({
                     filter: {_id:data.userId},
                     update: {
                         profilePicture:data.oldKey,

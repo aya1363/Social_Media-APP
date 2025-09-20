@@ -13,6 +13,7 @@ export const successResponse =<T = any | null> (
             data?:T
     }
 ) => {
+     console.log("✅ successResponse CALLED");   // 👈 trace log
     return res.status(statusCode).json({ message, data })
     
 }

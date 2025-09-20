@@ -1,7 +1,12 @@
 
 import { Request, Response } from 'express';
-import {  BadRequestException, conflictRequestException, notFoundRequestException, TooManyRequestsException } from '../../utils/response/error.response';
-import {Provider, userModel} from '../../DB/models/user.model';
+import {
+    BadRequestException, conflictRequestException,
+    notFoundRequestException, TooManyRequestsException,
+    
+} from '../../utils/response/error.response';
+
+import {Provider, UserModel} from '../../DB/models';
 import {  IConfirmEmailBodyInputsDto,  IGmail,  ILoginBodyInputsDto, ISignupBodyInputsDto } from './auth.dto'
 import * as validators from './auth.validation'
 import { compareHash, generateHash } from '../../utils/security/hash.security';
@@ -10,12 +15,12 @@ import { generateOtp } from '../../utils/otp';
 import { getLoginCredentials } from '../../utils/security/token.security';
 import {OAuth2Client, type TokenPayload} from 'google-auth-library';
 
-import { UserRepository } from '../../DB/DBRepository/user.repository';
+import { UserRepository } from '../../DB/DBRepository';
 import { successResponse } from '../../utils/response/success.response';
 
 
 class AuthenticationService{
-    private userModel= new UserRepository(userModel)
+    private userModel= new UserRepository(UserModel)
     private async verifyGmailAccount(idToken:string):Promise<TokenPayload> {
         const client = new OAuth2Client();
 
@@ -63,17 +68,17 @@ signup = async (req: Request, res: Response): Promise<Response> => {
     }
 
     const otp = generateOtp();
-    const confirmEmailOtp: string = await generateHash({ plaintext: otp });
-    const hashPassword: string = await generateHash({ plaintext: password });
-const user = await this.userModel.createUser({
+   // const confirmEmailOtp: string = await generateHash({ plaintext: otp });
+   // const hashPassword: string = await generateHash({ plaintext: password });
+    await this.userModel.createUser({
     data: [
     {
         userName,
         email,
-        password: hashPassword,
+        password,
         gender: req.body.gender,
         confirmEmail: null,
-        confirmEmailOtp
+        confirmEmailOtp:`${otp}`
     },
 ],
     options: { validateBeforeSave: true },
@@ -81,7 +86,7 @@ const user = await this.userModel.createUser({
 
     emailEvent.emit("confirmEmail", { to: email, otp });
 
-    return successResponse({ res, statusCode: 201, data: { user } })
+    return successResponse({ res, statusCode: 201})
     
 
 };
@@ -242,7 +247,7 @@ confirmEmail = async (req: Request, res: Response): Promise<Response> => {
         }
     
         const credentials = await getLoginCredentials(user)
-                return successResponse({res , data:{credentials}})
+                return res.status(200).json({message:'login with gmail successfully 🎉' , data:{credentials}})
 
     }
     sendForgotPassword = async (req: Request, res: Response): Promise<Response> => {
@@ -275,7 +280,7 @@ confirmEmail = async (req: Request, res: Response): Promise<Response> => {
     otp, // send plain OTP in email
   });
 
-                return successResponse({res })
+  return res.json({ message: "OTP sent successfully" });
 };
 
 
@@ -304,7 +309,7 @@ if (!isMatch) {
     throw new Error("Invalid OTP");
   }
 
-                return successResponse({res })
+return res.json({ message: "OTP verified successfully" });
 };
 
 
@@ -329,7 +334,7 @@ if (!isMatch) {
 
     await user.save();
 
-                return successResponse({res })
+    return res.json({ message: "Password reset successfully" });
 }
 
 }

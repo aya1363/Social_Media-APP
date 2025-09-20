@@ -6,8 +6,7 @@ import type { Request, Response, Express } from 'express'
 import cors from 'cors'
 import helmet from "helmet";
 import { rateLimit } from 'express-rate-limit'
-import userController from './modules/user/user.controller'
-import authController from './modules/auth/auth.controller'
+import { authRouter ,PostRouter,userRouter  } from "./modules";
 import { connectDB } from "./DB/connection.db";
 import { globalErrorHandling } from "./utils/response/error.response";
 
@@ -27,15 +26,18 @@ const bootstrap = async (): Promise<void> => {
     await connectDB();
     app.use(cors(), express.json(), helmet(),limiter)
     
-    app.use('/auth', authController)
-    app.use('/user',userController)
-
+    app.use('/auth', authRouter)
+    app.use('/user', userRouter)
+    app.use('/post', PostRouter)
 
 
     app.get('/', (req:Request ,res:Response) => {
         res.json({message:`Welcome to ${process.env.APPLICATION_NAME} home page 📱🌼`})
     })
+
     
+    
+
     
     app.use('{/*dummy}', (req: Request, res: Response): Response => {
         return res.status(404).json({ message: ' invalid application routing ,please check the method and url ❌' });

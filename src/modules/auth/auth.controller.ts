@@ -19,9 +19,4 @@ router.patch('/reset-password',validation(validators.resetPassword), authService
 
 
 
-
-
-
-
-
 export default router;
